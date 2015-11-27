@@ -121,11 +121,12 @@ class EmonHubFileSetup(EmonHubSetup):
         
         # Check settings only once per second
         now = time.time()
-        if now - self._settings_update_timestamp < 0:
+        if now < self._settings_update_timestamp:
             return
-        # Update timestamp
-        self._settings_update_timestamp = now
-        
+
+        # Update timestamp of when settings should next be checked:
+        self._settings_update_timestamp = now + 1
+
         # Backup settings
         settings = dict(self.settings)
         
