@@ -50,8 +50,8 @@ Controlled by the user via EmonHubSetup
 class EmonHub(object):
     
     __version__ = "emonHub 'emon-pi' variant v1.1"
-    
-    def __init__(self, setup):
+
+    def __init__(self, _setup):
         """Setup an OpenEnergyMonitor emonHub.
         
         Interface (EmonHubSetup): User interface to the hub.
@@ -62,7 +62,7 @@ class EmonHub(object):
         self._exit = False
 
         # Initialize setup and get settings
-        self._setup = setup
+        self._setup = _setup
         settings = self._setup.settings
         
         # Initialize logging
@@ -139,13 +139,9 @@ class EmonHub(object):
             if not name in settings['interfacers'] or not 'Type' in settings['interfacers'][name]:
                 pass
             else:
-                try:
-                    # test for 'init_settings' and 'runtime_setting' sections
-                    settings['interfacers'][name]['init_settings']
-                    settings['interfacers'][name]['runtimesettings']
-                except Exception as e:
-                    # If interfacer's settings are incomplete, continue without updating
-                    self._log.error("Unable to update '" + name + "' configuration: " + str(e))
+                if any([x not in settings['interfacers'][name]
+                        for x in ['init_settings', 'runtimesettings']]):
+                    self._log.error("Unable to update '" + name + "' configuration.")
                     continue
                 else:
                     # check init_settings against the file copy, if they are the same move on to the next
@@ -154,7 +150,7 @@ class EmonHub(object):
             # Delete interfacers if setting changed or name is unlisted or Type is missing
             self._log.info("Deleting interfacer '%s' ", name)
             self._interfacers[name].stop = True
-            del(self._interfacers[name])
+            del self._interfacers[name]
             
         for name, I in settings['interfacers'].iteritems():
             # If interfacer does not exist, create it
@@ -236,7 +232,7 @@ if __name__ == "__main__":
     
     # Display version number and exit
     if args.version:
-        print('emonHub %s' % EmonHub.__version__)
+        print 'emonHub %s' % EmonHub.__version__
         sys.exit()
 
     # Logging configuration
@@ -251,17 +247,17 @@ if __name__ == "__main__":
         # Close the file for now and get its path
         args.logfile.close()
         loghandler = logging.handlers.RotatingFileHandler(args.logfile.name,
-                                                       'a', 5000 * 1024, 1)
+                                                          'a', 5000 * 1024, 1)
     # Format log strings
     loghandler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)-8s %(threadName)-10s %(message)s'))
+        '%(asctime)s %(levelname)-8s %(threadName)-10s %(message)s'))
     logger.addHandler(loghandler)
 
     # Initialize hub setup
     try:
         setup = ehs.EmonHubFileSetup(args.config_file)
-    except ehs.EmonHubSetupInitError:
-        logger.critical(e, exc_info = True)
+    except ehs.EmonHubSetupInitError, e:
+        logger.critical(e, exc_info=True)
         sys.exit("Unable to load configuration file: " + args.config_file)
  
     setup.check_settings()
