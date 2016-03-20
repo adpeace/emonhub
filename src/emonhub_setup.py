@@ -1,7 +1,7 @@
 """
 
   This code is released under the GNU Affero General Public License.
-  
+
   OpenEnergyMonitor project:
   http://openenergymonitor.org
 
@@ -21,7 +21,7 @@ class EmonHubFileSetup(object):
 
         The hub settings are:
         'loglevel': the logging level
-        
+
         interfacers are dictionaries with the following keys:
         'Type': class name
         'init_settings': dictionary with initialization settings
@@ -47,7 +47,7 @@ class EmonHubFileSetup(object):
             import traceback
             self._log.error("Couldn't get settings", exc_info=True)
             return
-        
+
         if not 'hub' in self.settings or not 'interfacers' in self.settings:
             self._log.warning("Configuration file missing section - required hub and interfacers")
         return True

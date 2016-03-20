@@ -64,7 +64,7 @@ class EmonHubSocketInterfacer(EmonHubInterfacer):
         """Read data from socket and process if complete line received.
 
         Return data as a list: [NodeID, val1, val2]
-        
+
         """
 
         # Check if data received
@@ -76,10 +76,10 @@ class EmonHubSocketInterfacer(EmonHubInterfacer):
 
             # Accept connection
             conn, addr = self._socket.accept()
-            
+
             # Read data
             self._sock_rx_buf = self._sock_rx_buf + conn.recv(1024)
-            
+
             # Close connection
             conn.close()
 

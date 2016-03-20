@@ -26,7 +26,7 @@ class EmonHubJeeInterfacer(ehi.EmonHubSerialInterfacer):
             super(EmonHubJeeInterfacer, self).__init__(name, com_port, com_baud)
         else:
             super(EmonHubJeeInterfacer, self).__init__(name, com_port, 38400)
-        
+
         # Display device firmware version and current settings
         self.info = ["",""]
         if self._ser is not None:
@@ -121,7 +121,7 @@ class EmonHubJeeInterfacer(ehi.EmonHubSerialInterfacer):
         # Strip leading 'OK' from frame if needed
         if f[0]=='OK':
             f = f[1:]
- 
+
         # Extract RSSI value if it's available
         if str(f[-1])[0]=='(' and str(f[-1])[-1]==')':
             c.rssi = int(f[-1][1:-1])
@@ -153,7 +153,7 @@ class EmonHubJeeInterfacer(ehi.EmonHubSerialInterfacer):
         **kwargs (dict): settings to be modified. Available settings are
         'baseid', 'frequency', 'group'. Example:
         {'baseid': '15', 'frequency': '4', 'group': '210'}
-        
+
         """
 
         for key, setting in self._jee_settings.iteritems():
@@ -184,7 +184,7 @@ class EmonHubJeeInterfacer(ehi.EmonHubSerialInterfacer):
                 command = '1p'
             elif key == 'calibration' and setting == '110V':
                 command = '2p'
-                
+
             else:
                 self._log.warning("In interfacer set '%s' is not a valid setting for %s: %s" % (str(setting), self.name, key))
                 continue
@@ -198,10 +198,10 @@ class EmonHubJeeInterfacer(ehi.EmonHubSerialInterfacer):
         super(EmonHubJeeInterfacer, self).set(**kwargs)
 
     def action(self):
-        """Actions that need to be done on a regular basis. 
-        
+        """Actions that need to be done on a regular basis.
+
         This should be called in main loop by instantiater.
-        
+
         """
 
         t = time.time()
@@ -247,9 +247,9 @@ class EmonHubJeeInterfacer(ehi.EmonHubSerialInterfacer):
                 self._log.warning(self.name + " discarding Tx packet: values out of scope" )
                 return
             payload += str(int(value))+","
-                
+
         payload += cmd
-        
+
         self._log.debug(str(f.uri) + " sent TX packet: " + payload)
         self._ser.write(payload)
 
