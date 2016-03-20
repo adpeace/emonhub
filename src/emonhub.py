@@ -92,14 +92,7 @@ class EmonHub(object):
 
         # Until asked to stop
         while not self._exit:
-            # For all Interfacers
-            for I in self._interfacers.itervalues():
-                # Check thread is still running
-                if not I.isAlive():
-                    self._log.warning(I.name + " thread is dead") # had to be restarted")
-
-            # Sleep until next iteration
-            time.sleep(0.2)
+            signal.pause()
 
     def close(self):
         """Close hub. Do some cleanup before leaving."""
