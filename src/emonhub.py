@@ -87,20 +87,15 @@ class EmonHub(object):
 
         # Set signal handler to catch SIGINT and shutdown gracefully
         signal.signal(signal.SIGINT, self._sigint_handler)
+
+        self._update_settings(self._setup.settings)
         
         # Until asked to stop
         while not self._exit:
-            
-            # Run setup and update settings if modified
-            self._setup.run()
-            if self._setup.check_settings():
-                self._update_settings(self._setup.settings)
-
             # For all Interfacers
             for I in self._interfacers.itervalues():
                 # Check thread is still running
                 if not I.isAlive():
-                    #I.start()
                     self._log.warning(I.name + " thread is dead") # had to be restarted")
 
             # Sleep until next iteration
@@ -265,13 +260,14 @@ if __name__ == "__main__":
     # Initialize hub setup
     try:
         setup = ehs.EmonHubFileSetup(args.config_file)
-    except ehs.EmonHubSetupInitError as e:
-        logger.critical(e)
+    except ehs.EmonHubSetupInitError:
+        logger.critical(e, exc_info = True)
         sys.exit("Unable to load configuration file: " + args.config_file)
  
+    setup.check_settings()
+
     # If in "Show settings" mode, print settings and exit
     if args.show_settings:
-        setup.check_settings()
         pprint.pprint(setup.settings)
     
     # Otherwise, create, run, and close EmonHub instance
@@ -280,7 +276,6 @@ if __name__ == "__main__":
             hub = EmonHub(setup)
         except Exception as e:
             sys.exit("Could not start EmonHub: " + str(e))
-        else:
-            hub.run()
-            # When done, close hub
-            hub.close()
+
+        hub.run()
+        hub.close()
