@@ -17,7 +17,8 @@ import signal
 import argparse
 import pprint
 
-import emonhub_setup as ehs
+from configobj import ConfigObj
+
 import interfacers.emonhub_interfacer as ehi
 import emonhub_coder as ehc
 
@@ -51,19 +52,14 @@ class EmonHub(object):
 
     __version__ = "emonHub 'emon-pi' variant v1.1"
 
-    def __init__(self, _setup):
+    def __init__(self, _settings):
         """Setup an OpenEnergyMonitor emonHub.
 
         Interface (EmonHubSetup): User interface to the hub.
-
         """
 
         # Initialize exit request flag
         self._exit = False
-
-        # Initialize setup and get settings
-        self._setup = _setup
-        settings = self._setup.settings
 
         # Initialize logging
         self._log = logging.getLogger("EmonHub")
@@ -75,7 +71,7 @@ class EmonHub(object):
         self._interfacers = {}
 
         # Update settings
-        self._update_settings(settings)
+        self._update_settings(_settings)
 
     def run(self):
         """Launch the hub.
@@ -87,8 +83,6 @@ class EmonHub(object):
 
         # Set signal handler to catch SIGINT and shutdown gracefully
         signal.signal(signal.SIGINT, self._sigint_handler)
-
-        self._update_settings(self._setup.settings)
 
         # Until asked to stop
         while not self._exit:
@@ -248,23 +242,22 @@ if __name__ == "__main__":
 
     # Initialize hub setup
     try:
-        setup = ehs.EmonHubFileSetup(args.config_file)
-    except ehs.EmonHubSetupInitError, e:
-        logger.critical(e, exc_info=True)
+        settings = ConfigObj(args.config_file)
+    except:
+        logger.critical("Error loading config file", exc_info=True)
         sys.exit("Unable to load configuration file: " + args.config_file)
-
-    setup.check_settings()
 
     # If in "Show settings" mode, print settings and exit
     if args.show_settings:
-        pprint.pprint(setup.settings)
+        pprint.pprint(dict(settings))
+        sys.exit()
 
     # Otherwise, create, run, and close EmonHub instance
-    else:
-        try:
-            hub = EmonHub(setup)
-        except Exception as e:
-            sys.exit("Could not start EmonHub: " + str(e))
+    try:
+        hub = EmonHub(settings)
+    except Exception as e:
+        logger.critical("Error starting up.", exc_info=True)
+        sys.exit("Could not start EmonHub: " + str(e))
 
-        hub.run()
-        hub.close()
+    hub.run()
+    hub.close()
