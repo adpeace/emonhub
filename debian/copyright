@@ -1,0 +1,8 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream: emonhub
+Upstream-Contact: https://github.com/openenergymonitor/emonhub
+License: AGPL
+
+Files: debian/*
+Copyright: 2016, Andrew Peace <andrew.peace@cantab.net>
+License: AGPL

@@ -1,0 +1,16 @@
+Reequires paho-mqtt, PyDispatcher Python packages, not available as debs.
+
+TODO
+
+* Add emonhub user to dialout group.
+
+* What's the exact license this is issued under?  emonhub.py says AGPL, but
+  which version, and are all files covered by this statement?
+
+* Who is the copyright owner for files in this repository?  (Needed for
+  debian/copyright.)
+
+* Write manpage for emonhub.
+
+* Make config file reloading work more sensibly so the editor in emoncms works
+  again.

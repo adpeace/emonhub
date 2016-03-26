@@ -1,0 +1,7 @@
+if [ "$1" = "configure" ] || [ "$1" = "reconfigure" ]; then
+    adduser --system --no-create-home --group emonhub
+fi
+
+#DEBHELPER#
+
+exit 0

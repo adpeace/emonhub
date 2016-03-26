@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+
+override_dh_installinit:
+	dh_installinit --onlyscripts
+
+%:
+	dh $@ --with python2

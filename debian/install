@@ -1,0 +1,22 @@
+service/emonhub etc/init.d/
+conf/default/emonhub etc/default/
+conf/emonhub.conf etc/
+
+conf/emonhub.conf usr/share/emonhub/conf-examples/
+conf/old.default.emonhub.conf usr/share/emonhub/conf-examples/
+conf/vedirect.emonhub.conf usr/share/emonhub/conf-examples/
+conf/VEDirect.readme.md usr/share/emonhub/conf-examples/
+
+src/emonhub.py usr/share/emonhub/
+src/emonhub_coder.py usr/share/emonhub/
+src/interfacers/Cargo.py usr/share/emonhub/interfacers/
+src/interfacers/EmonHubEmoncmsHTTPInterfacer.py usr/share/emonhub/interfacers/
+src/interfacers/emonhub_interfacer.py usr/share/emonhub/interfacers/
+src/interfacers/EmonHubJeeInterfacer.py usr/share/emonhub/interfacers/
+src/interfacers/EmonHubMqttInterfacer.py usr/share/emonhub/interfacers/
+src/interfacers/EmonHubPacketGenInterfacer.py usr/share/emonhub/interfacers/
+src/interfacers/EmonHubSerialInterfacer.py usr/share/emonhub/interfacers/
+src/interfacers/EmonHubSocketInterfacer.py usr/share/emonhub/interfacers/
+src/interfacers/EmonHubTesterInterfacer.py usr/share/emonhub/interfacers/
+src/interfacers/EmonHubVEDirectInterfacer.py usr/share/emonhub/interfacers/
+src/interfacers/__init__.py usr/share/emonhub/interfacers/
