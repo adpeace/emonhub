@@ -53,7 +53,7 @@ class EmonHubSerialInterfacer(ehi.EmonHubInterfacer):
             self._log.debug("Opening serial port: " + str(com_port) + " @ "+ str(com_baud) + " bits/s")
         except serial.SerialException as e:
             self._log.error(e)
-            raise EmonHubInterfacerInitError('Could not open COM port %s' %
+            raise ehi.EmonHubInterfacerInitError('Could not open COM port %s' %
                                            com_port)
         else:
             return s
