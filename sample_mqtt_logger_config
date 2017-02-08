@@ -1,0 +1,10 @@
+[mqtt]
+user = my_user
+password = my_password
+
+[emoncms]
+apikey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+url = http://localhost/emoncms
+
+[emonhub]
+basetopic = emon

@@ -2,6 +2,9 @@ service/emonhub etc/init.d/
 conf/default/emonhub etc/default/
 conf/emonhub.conf etc/
 
+sample_mqtt_logger_config usr/share/emonhub/
+emon_mqtt_logger.py /usr/share/emonhub/
+
 conf/emonhub.conf usr/share/emonhub/conf-examples/
 conf/old.default.emonhub.conf usr/share/emonhub/conf-examples/
 conf/vedirect.emonhub.conf usr/share/emonhub/conf-examples/

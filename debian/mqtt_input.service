@@ -1,0 +1,17 @@
+# Systemd unit file for mqtt input script
+
+[Unit]
+Description=Revised Emoncms MQTT Input Script
+Requires=mosquitto.service mysql.service
+
+[Service]
+Type=idle
+ExecStart=/usr/share/emonhub/emon_mqtt_logger.py
+
+# Restart script if stopped
+Restart=always
+# Wait 60s before restart
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
