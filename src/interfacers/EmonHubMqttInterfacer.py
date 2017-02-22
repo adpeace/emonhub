@@ -2,6 +2,7 @@
 
 """
 import time
+import json
 import paho.mqtt.client as mqtt
 from pydispatch import dispatcher
 from emonhub_interfacer import EmonHubInterfacer
@@ -31,7 +32,10 @@ class EmonHubMqttInterfacer(EmonHubInterfacer):
 
             # nodes/emontx/power1 format
             'nodevar_format_enable': 0,
-            'nodevar_format_basetopic': "nodes/"
+            'nodevar_format_basetopic': "nodes/",
+
+            'json_format_enable': 0,
+            'json_format_topic': 'emon/',
         };
 
         self._mqttc = mqtt.Client()
@@ -103,6 +107,26 @@ class EmonHubMqttInterfacer(EmonHubInterfacer):
 
     def receiver(self, cargo):
         if self._connected:
+            # JSON format:
+            if self._settings['json_format_enable'] == '1':
+                # Node id or nodename if given
+                nodestr = str(cargo.nodeid)
+                if cargo.nodename:
+                    nodestr = str(cargo.nodename)
+
+                publish = { 'rssi': str(cargo.rssi) }
+                for value, varstr in zip(cargo.realdata, cargo.names):
+                    publish[varstr] = str(value)
+
+                assert self._settings['json_format_topic'].endswith('/')
+                topic = "{}{}".format(self._settings['json_format_topic'], nodestr)
+                payload = json.dumps(publish)
+                self._log.info("Publishing: {} {}".format(topic, payload))
+                result = self._mqttc.publish(topic, payload=payload, qos=2, retain=False)
+
+                if result[0] == 4:
+                    self._log.info("Publishing error? returned 4")
+
             # ----------------------------------------------------------
             # General MQTT format: emonhub/rx/emonpi/power1 ... 100
             # ----------------------------------------------------------
