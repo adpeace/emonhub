@@ -8,3 +8,5 @@ url = http://localhost/emoncms
 
 [emonhub]
 basetopic = emon
+record_type = nodevars
+

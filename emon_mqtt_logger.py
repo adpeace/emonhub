@@ -23,9 +23,11 @@ def load_config(path):
         'emoncms_apikey': cfg.get('emoncms', 'apikey'),
         'emoncms_url': cfg.get('emoncms', 'url'),
         'emonhub_bastopic': cfg.get('emonhub', 'basetopic'),
+        'record_type': cfg.get('emonhub', 'record_type'),
         }
 
-def mqtt_logger(emoncms, apikey, basetopic, mqtt_user, mqtt_password):
+def mqtt_logger(emoncms, apikey, basetopic, mqtt_user, mqtt_password,
+                record_type):
     emoncms_post_url = "%s/input/post.json" % emoncms
     def on_connect(client, userdata, flags, rc):
         if rc:
@@ -35,7 +37,16 @@ def mqtt_logger(emoncms, apikey, basetopic, mqtt_user, mqtt_password):
         print "Subscribing to %s" % subscription
         client.subscribe(subscription)
 
-    def on_message(client, userdata, msg):
+    def on_json_message(client, userdata, msg):
+        subtopic = msg.topic[len(basetopic) + 1:]
+
+        params = {'node': subtopic, 'json': msg.payload, 'apikey': apikey}
+        resp = requests.post(emoncms_post_url, params=params)
+        if resp.status_code != 200:
+            print 'Error posting to emoncms: status %d:' % resp.status_code
+            print resp.content
+
+    def on_nodevar_message(client, userdata, msg):
         subtopic = msg.topic[len(basetopic) + 1:]
 
         m = re.match(r'^([^/]*)/([^/]*)$', subtopic)
@@ -60,9 +71,16 @@ def mqtt_logger(emoncms, apikey, basetopic, mqtt_user, mqtt_password):
             print 'Error posting to emoncms: status %d:' % resp.status_code
             print resp.content
 
+
     client = mqtt.Client()
     client.on_connect = on_connect
-    client.on_message = on_message
+    if record_type == 'json':
+        client.on_message = on_json_message
+    elif record_type == 'nodevars':
+        client.on_message = on_nodevar_message
+    else:
+        raise RuntimeError, "Unknown record_type %s (choose json or " \
+                            "nodevars)" % record_type
     client.username_pw_set(mqtt_user, mqtt_password)
 
     client.connect("localhost", 1883, 60)
@@ -79,4 +97,4 @@ if __name__ == "__main__":
 
     mqtt_logger(config['emoncms_url'], config['emoncms_apikey'],
                 config['emonhub_bastopic'], config['mqtt_user'],
-                config['mqtt_password'])
+                config['mqtt_password'], config['record_type'])
