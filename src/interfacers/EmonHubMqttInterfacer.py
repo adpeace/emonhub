@@ -2,6 +2,7 @@
 
 """
 import time
+import datetime
 import json
 import paho.mqtt.client as mqtt
 from pydispatch import dispatcher
@@ -117,6 +118,12 @@ class EmonHubMqttInterfacer(EmonHubInterfacer):
                 publish = { 'rssi': str(cargo.rssi) }
                 for value, varstr in zip(cargo.realdata, cargo.names):
                     publish[varstr] = str(value)
+
+                un = datetime.datetime.utcnow()
+                publish['timestamp_utc'] = time.mktime((
+                    un.year, un.month, un.day,
+                    un.hour, un.minute, un.second,
+                    -1, -1, -1)) + un.microsecond / 1e6
 
                 assert self._settings['json_format_topic'].endswith('/')
                 topic = "{}{}".format(self._settings['json_format_topic'], nodestr)
