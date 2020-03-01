@@ -46,7 +46,7 @@ class EmonHubInterfacer(threading.Thread):
 
         # Initialise settings
         self.init_settings = {}
-        self._defaults = {'pause': 'off', 'interval': 0, 'datacode': '0',
+        self._defaults = {'pause': 'off', 'interval': 0, 'datacode': '0', 'whitening': '0',
                           'scale':'1', 'timestamped': False, 'targeted': False, 'nodeoffset' : '0','pubchannels':["ch1"],'subchannels':["ch2"]}
         self._settings = {}
 
@@ -154,6 +154,13 @@ class EmonHubInterfacer(threading.Thread):
         # if n % 1 != 0 or n < 0 or n > 31:
         #     self._log.warning(str(cargo.uri) + " Discarded RX frame 'node id outside scope' : " + str(rxc.realdata))
         #     return False
+
+        # Data whitening uses for ensuring rfm sync
+        if node in ehc.nodelist and 'rx' in ehc.nodelist[node] and 'whitening' in ehc.nodelist[node]['rx']:
+            whitening = ehc.nodelist[node]['rx']['whitening']
+            if whitening==True or whitening=="1":
+                for i in range(0, len(rxc.realdata), 1):
+                    rxc.realdata[i] = rxc.realdata[i] ^ 0x55
 
         # check if node is listed and has individual datacodes for each value
         if node in ehc.nodelist and 'rx' in ehc.nodelist[node] and 'datacodes' in ehc.nodelist[node]['rx']:
